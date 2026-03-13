@@ -1,10 +1,14 @@
-# QuickAid - Smart Campus Helpdesk
+<div align="center">
+
+# QuickAid
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
 ![Azure Functions](https://img.shields.io/badge/Azure_Functions-0062AD?style=for-the-badge&logo=azure-functions&logoColor=white)
 ![Azure Cosmos DB](https://img.shields.io/badge/Azure_Cosmos_DB-51A6ED?style=for-the-badge&logo=azure-cosmos-db&logoColor=white)
+
+</div>
 
 ## Overview
 

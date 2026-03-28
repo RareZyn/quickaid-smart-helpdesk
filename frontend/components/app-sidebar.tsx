@@ -16,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const Logo = siteConfig.company.logo;
@@ -41,7 +42,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={siteConfig.navMain} action={siteConfig.quickCreate} />
-        <NavSecondary items={siteConfig.navSecondary} className="mt-auto" />
+        <div className="mt-auto">
+          <Separator className="mx-auto hidden w-4 group-data-[collapsible=icon]:block group-data-[collapsible=icon]:mb-2" />
+          <NavSecondary items={siteConfig.navSecondary} />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={siteConfig.user} />

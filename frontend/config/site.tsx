@@ -33,11 +33,13 @@ export const siteConfig = {
     name: "User",
     email: "user@example.com",
     avatar: "",
+    fallback: "U",
   },
 
   // Quick Create Action
   quickCreate: {
     title: "Quick Create",
+    url: "/tickets/new",
     icon: <CirclePlusIcon />,
   },
 

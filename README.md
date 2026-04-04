@@ -1,105 +1,172 @@
 <div align="center">
 
-# QuickAid
+# QuickAid — Smart Campus Helpdesk
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Django REST](https://img.shields.io/badge/Django_REST-ff1709?style=for-the-badge&logo=django&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
-![Azure Functions](https://img.shields.io/badge/Azure_Functions-0062AD?style=for-the-badge&logo=azure-functions&logoColor=white)
-![Azure Cosmos DB](https://img.shields.io/badge/Azure_Cosmos_DB-51A6ED?style=for-the-badge&logo=azure-cosmos-db&logoColor=white)
 
 </div>
 
 ## Overview
 
-QuickAid is a smart campus helpdesk application designed for university students and staff to submit issues, track requests, and receive timely support. A cloud-native application built on Microsoft Azure, QuickAid enables ticket submission, status tracking, automated notifications, and secure data management, while remaining scalable, cost-efficient, and deployment-ready under Azure Free Tier constraints.
+QuickAid is a smart campus helpdesk application designed for university students and staff to submit issues, track requests, and receive timely support. Built with a Next.js frontend and Django REST Framework backend, QuickAid enables ticket submission, status tracking, automated notifications, and secure data management.
 
 This application was developed as a Capstone Project for the MyMahir Microsoft Developer programme.
 
 ## Features
 
-- **Issue Submission**: A modern web form interface allowing users to quickly submit helpdesk tickets.
-- **Ticket Tracking**: A secure endpoint enabling users to retrieve and check the status of their submitted tickets via their email addresses.
-- **Automated Notifications**: Immediate email confirmations sent upon ticket submission, ensuring users are kept in the loop.
-- **Persistent Data**: Secure and scalable ticket storage utilizing unique identifiers and accurate status tracking mechanisms.
+- **Issue Submission**: A modern web form interface allowing users to quickly submit helpdesk tickets with categories and priority levels.
+- **Ticket Tracking**: Users can retrieve and check the status of their submitted tickets via their email addresses.
+- **Role-Based Access**: Three user roles — Student/Staff, Support Agent, and Admin — each with appropriate permissions.
+- **Ticket Management**: Support staff can update ticket statuses; admins can assign tickets and add internal notes.
+- **Automated Notifications**: Email confirmations on ticket creation, status changes, and ticket assignments via SendGrid.
 
 ## Architecture and Technology Stack
 
-The project utilizes a decoupled client-server model, capitalizing on the scalability of serverless computing and managed cloud services.
+The project uses a decoupled client-server architecture with a React frontend and Django REST API backend.
 
 ### Frontend
 
-- **Framework**: Next.js and React
-- **Styling**: Tailwind CSS and custom UI components
+- **Framework**: Next.js 16 with React 19
+- **Styling**: Tailwind CSS 4
+- **UI Components**: Radix UI, shadcn/ui
 - **Hosting**: Azure App Service
 
 ### Backend
 
-- **Compute**: Azure Functions (Serverless architecture using Python)
-- **Database**: Azure Cosmos DB (NoSQL)
-- **Secrets Management**: Azure Key Vault
-- **Communication**: SendGrid API for transactional emails
-- **Telemetry & Monitoring**: Azure Application Insights (Optional diagnostic integration)
+- **Framework**: Django 6.0 with Django REST Framework
+- **Database**: SQLite (development) / Azure Cosmos DB (production)
+- **API**: RESTful endpoints with role-based permissions
+- **Email**: SendGrid API for transactional emails
+- **Security**: Azure Key Vault for secret management
+- **Monitoring**: Azure Application Insights (optional)
+
+### DevOps
+
+- **Containerisation**: Docker and Docker Compose
+- **Version Control**: Git and GitHub
 
 ## Project Structure
 
 ```text
-quickaid-smart-helpdesk/
-├── docs/                 # Project documentation and specifications
-├── frontend/             # Next.js web application
-│   ├── app/              # Next.js App Router pages and layouts
-│   ├── components/       # Reusable UI components
-│   ├── lib/              # Utility functions
-│   └── public/           # Static assets
-└── README.md             # Project overview
+QuickSmartAid/
+├── docker-compose.yml
+├── Project.md
+├── README.md
+│
+├── frontend/                   # Next.js web application
+│   ├── Dockerfile
+│   ├── app/                    # Next.js App Router
+│   │   ├── dashboard/          # Dashboard pages
+│   │   ├── login/              # Authentication pages
+│   │   ├── layout.tsx          # Root layout
+│   │   └── page.tsx            # Landing page
+│   ├── components/             # Reusable UI components
+│   │   ├── ui/                 # shadcn/ui primitives
+│   │   ├── app-sidebar.tsx     # Sidebar navigation
+│   │   ├── nav-main.tsx        # Main navigation
+│   │   └── ...
+│   ├── hooks/                  # Custom React hooks
+│   ├── lib/                    # Utility functions
+│   └── public/                 # Static assets
+│
+├── backend/                    # Django REST API
+│   ├── Dockerfile
+│   ├── Pipfile                 # Python dependencies (pipenv)
+│   ├── requirements.txt        # Python dependencies (pip)
+│   ├── manage.py
+│   ├── config/                 # Django project settings
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   ├── wsgi.py
+│   │   └── asgi.py
+│   ├── users/                  # User management app
+│   │   ├── models.py           # Custom User model with roles
+│   │   ├── serializers.py
+│   │   └── services.py
+│   ├── tickets/                # Ticket management app
+│   │   ├── models.py           # Ticket, StatusHistory, AdminNote
+│   │   ├── serializers.py
+│   │   ├── views.py            # API views
+│   │   ├── urls.py             # API route definitions
+│   │   └── services.py
+│   └── notifications/          # Email notification app
+│       ├── models.py           # EmailLog
+│       ├── serializers.py
+│       └── services.py
+│
+└── docs/                       # Project documentation
 ```
+
+## API Endpoints
+
+| Method | Endpoint                         | Description                          | Auth      |
+|--------|----------------------------------|--------------------------------------|-----------|
+| POST   | `/api/tickets`                   | Create a new ticket                  | Public    |
+| GET    | `/api/tickets?email={email}`     | Get tickets by email                 | Public    |
+| GET    | `/api/tickets/{ticketId}`        | Get ticket details                   | Public    |
+| PUT    | `/api/tickets/{ticketId}/status` | Update ticket status                 | Required  |
+| PUT    | `/api/tickets/{ticketId}/assign` | Assign ticket to support staff       | Required  |
+| POST   | `/api/tickets/{ticketId}/notes`  | Add internal note to ticket          | Required  |
+| GET    | `/api/admin/tickets`             | Get all tickets with filters         | Required  |
 
 ## System Requirements
 
-To run this project locally or deploy it to your own environment, you will need:
-
-- An active **Microsoft Azure** subscription (Free Tier is sufficient)
-- A **SendGrid** account for email integration API keys
-- **Node.js** (v18 or higher) for frontend development
-- **Python** (v3.9 or higher) and Azure Functions Core Tools for backend development
+- **Node.js** v18+ (frontend)
+- **Python** v3.9+ (backend)
+- **Docker** and **Docker Compose** (optional, for containerised setup)
+- **Microsoft Azure** subscription (for production deployment)
+- **SendGrid** account (for email notifications)
 
 ## Getting Started
 
-### Local Frontend Setup
+### Option 1: Docker (Recommended)
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install the necessary dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-4. Access the web interface at `http://localhost:3000`.
+Run both frontend and backend with a single command:
 
-### Backend Configuration (Azure Functions)
+```bash
+docker-compose up --build
+```
 
-_Note: The backend implementation relies on an Azure Functions Python worker. Full configuration steps will be added once the backend directory is initialized._
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000/api/`
 
-### Azure Deployment
+### Option 2: Manual Setup
 
-1. **Database**: Provision an Azure Cosmos DB (Core NoSQL) account.
-2. **Secrets**: Create an Azure Key Vault and store infrastructure connection strings and SendGrid API keys.
-3. **Backend**: Publish the Python functions to an Azure Function App. Ensure it has access policies granting read permissions to Key Vault.
-4. **Frontend**: Deploy the Next.js application to Azure App Service, specifying environment variables pointing to your Azure Functions endpoint.
+#### Frontend Setup
 
-## Evaluation and Assessment
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-This project was built to meet the evaluation criteria of the MyMahir programme:
+The frontend will be available at `http://localhost:3000`.
 
-- Successful deployment of both Frontend and Backend components.
-- Demonstrated working features (Submit and Retrieve Tickets).
-- Proper integration of SendGrid for email notifications.
-- Rigorous adherence to security principles using Azure Key Vault.
+#### Backend Setup
+
+```bash
+cd backend
+
+# Create and activate virtual environment
+pipenv install
+pipenv shell
+
+# Or use pip directly
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Start the development server
+python manage.py runserver
+```
+
+The backend API will be available at `http://localhost:8000/api/`.
 
 ## License
 

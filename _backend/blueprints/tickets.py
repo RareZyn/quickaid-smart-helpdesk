@@ -1,22 +1,29 @@
 """
+Tickets Blueprint to handle endpoints/API
 API:
   POST/api/submit_ticket - Submit a new helpdesk ticket
   GET/api/tickets - Display a list of tickets with filters
   GET/api/tickets/{ticketId} - Display afull ticket details
+  GET/api/tickets/search?q= - Search ticket by subject or ticket ID
 """
 
 import logging
-
 import azure.functions as func
 
 from _backend.shared.ticket.email_service import send_confirmation_email
-from _backend.shared.ticket.ticket_service import create_ticket, get_tickets_by_user_id
+from _backend.shared.ticket.ticket_service import (
+    create_ticket, 
+    get_tickets_by_user_id
+)
 from _backend.shared.ticket.validator import validate_ticket
-from utils.http_helpers import error_response, json_response, preflight_response
+from utils.http_helpers import (
+    error_response,
+    json_response,
+    preflight_response
+)
 
 bp = func.Blueprint()
 logger = logging.getLogger(__name__)
-
 
 # ── POST/api/submit_ticket ──────────────────────────────────────────
 # Submit a new helpdesk ticket
@@ -68,7 +75,8 @@ def submit_ticket(req: func.HttpRequest) -> func.HttpResponse:
         },
         201,
     )
-    
+  
+  
 # ── GET/api/tickets ─────────────────────────────────────────────────
 # Display a list of tickets with filters
 # Filter by status and category
@@ -105,8 +113,37 @@ def get_tickets_endpoint(req: func.HttpRequest) -> func.HttpResponse:
         return error_response("Failed to retrieve tickets. Please try again later.", 500)
 
 
-# ── GET/api/tickets/{ticketId} ─────────────────────────────────────────────────
-# Display afull ticket details
+# ── GET /api/tickets/search?q= ───────────────────────────────────────
+# Search tikcet by subject or ticket ID
+bp.route(route="tickets/search",  methods=["GET", "OPTIONS"])
+def search_tickets_endpoint(req: func.HttpRequest) -> func.HttpResponse:
+    
+    # Handle CORS preflight
+    if req.method == "OPTIONS":
+        return preflight_response()
+
+    q = req.params.get("q", "").strip()
+    if not q:
+        return error_response("query or search parameter is requied.", 400)
+    
+    try:
+        tickets = search_tickets(q)
+        
+        if not tickets:
+            return json_response({
+                "messege": "No tickets matched your search. Try different keywords",
+                "tickets": []
+            })
+        
+        return json_response({"tickets": tickets})
+    
+    except Exception as e:
+        logger.error("Search failed for query '%s' : %s", q, e)
+        return error_response("Search failed. Please try again later.", 500)
+
+
+# ── GET/api/tickets/{ticketId} ──────────────────────────────────────
+# Display a ticket full details
 bp.route(route="tickets/{ticketId}", methods=["GET", "OPTIONS"])
 def get_ticket_by_id_endpoint(req: func.HttpRequest) -> func.HttpResponse:
     
